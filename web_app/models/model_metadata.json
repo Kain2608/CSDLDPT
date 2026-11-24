@@ -1,0 +1,612 @@
+{
+  "trained_at": "2026-11-24T03:56:39",
+  "dataset": {
+    "n_files": 648,
+    "n_species": 13,
+    "n_features": 92,
+    "species_counts": {
+      "Bear": 50,
+      "Cat": 50,
+      "Chicken": 48,
+      "Cow": 50,
+      "Dog": 50,
+      "Dolphin": 50,
+      "Donkey": 50,
+      "Elephant": 50,
+      "Frog": 50,
+      "Horse": 50,
+      "Lion": 50,
+      "Monkey": 50,
+      "Sheep": 50
+    }
+  },
+  "hyperparameters": {
+    "kmeans_n_clusters": 13,
+    "kmeans_init": "k-means++",
+    "kmeans_n_init": 10,
+    "kmeans_random_state": 42,
+    "knn_algorithm": "kd_tree",
+    "knn_metric": "euclidean",
+    "knn_leaf_size": 30,
+    "pca_n_components": 20
+  },
+  "init_timings_ms": {
+    "load_csv_and_scaler_ms": 10.115,
+    "kmeans_fit_ms": 243.541,
+    "kdtree_fit_ms": 5.298
+  },
+  "kmeans_metrics": {
+    "silhouette": 0.102662,
+    "davies_bouldin": 1.997796,
+    "calinski_harabasz": 52.086859,
+    "inertia": 30043.562709,
+    "ari": 0.118729,
+    "nmi": 0.287052,
+    "purity": 0.305556
+  },
+  "pca_2d_explained_variance_ratio": [
+    0.3535,
+    0.0869
+  ],
+  "pca_strategy_explained_variance_sum": 0.8845,
+  "cluster_summary": [
+    {
+      "cluster_id": 0,
+      "size": 9,
+      "dominant_species": "Cat",
+      "dominant_count": 4,
+      "dominant_ratio": 0.4444,
+      "species_distribution": {
+        "Cat": 4,
+        "Horse": 3,
+        "Dog": 1,
+        "Monkey": 1
+      }
+    },
+    {
+      "cluster_id": 1,
+      "size": 21,
+      "dominant_species": "Frog",
+      "dominant_count": 7,
+      "dominant_ratio": 0.3333,
+      "species_distribution": {
+        "Frog": 7,
+        "Horse": 4,
+        "Elephant": 3,
+        "Donkey": 2,
+        "Lion": 2,
+        "Bear": 1,
+        "Cat": 1,
+        "Monkey": 1
+      }
+    },
+    {
+      "cluster_id": 2,
+      "size": 93,
+      "dominant_species": "Dolphin",
+      "dominant_count": 21,
+      "dominant_ratio": 0.2258,
+      "species_distribution": {
+        "Dolphin": 21,
+        "Donkey": 21,
+        "Bear": 10,
+        "Sheep": 8,
+        "Cat": 7,
+        "Horse": 7,
+        "Elephant": 5,
+        "Frog": 5,
+        "Lion": 4,
+        "Chicken": 2,
+        "Monkey": 2,
+        "Dog": 1
+      }
+    },
+    {
+      "cluster_id": 3,
+      "size": 32,
+      "dominant_species": "Chicken",
+      "dominant_count": 9,
+      "dominant_ratio": 0.2812,
+      "species_distribution": {
+        "Chicken": 9,
+        "Frog": 6,
+        "Monkey": 6,
+        "Cat": 4,
+        "Dog": 3,
+        "Donkey": 2,
+        "Sheep": 2
+      }
+    },
+    {
+      "cluster_id": 4,
+      "size": 108,
+      "dominant_species": "Bear",
+      "dominant_count": 34,
+      "dominant_ratio": 0.3148,
+      "species_distribution": {
+        "Bear": 34,
+        "Lion": 21,
+        "Cow": 19,
+        "Elephant": 16,
+        "Sheep": 8,
+        "Dolphin": 4,
+        "Dog": 3,
+        "Monkey": 2,
+        "Cat": 1
+      }
+    },
+    {
+      "cluster_id": 5,
+      "size": 55,
+      "dominant_species": "Cow",
+      "dominant_count": 14,
+      "dominant_ratio": 0.2545,
+      "species_distribution": {
+        "Cow": 14,
+        "Monkey": 8,
+        "Cat": 7,
+        "Sheep": 7,
+        "Donkey": 6,
+        "Elephant": 4,
+        "Bear": 3,
+        "Chicken": 3,
+        "Frog": 2,
+        "Dog": 1
+      }
+    },
+    {
+      "cluster_id": 6,
+      "size": 39,
+      "dominant_species": "Horse",
+      "dominant_count": 16,
+      "dominant_ratio": 0.4103,
+      "species_distribution": {
+        "Horse": 16,
+        "Dolphin": 15,
+        "Monkey": 5,
+        "Cat": 1,
+        "Chicken": 1,
+        "Frog": 1
+      }
+    },
+    {
+      "cluster_id": 7,
+      "size": 37,
+      "dominant_species": "Frog",
+      "dominant_count": 16,
+      "dominant_ratio": 0.4324,
+      "species_distribution": {
+        "Frog": 16,
+        "Chicken": 7,
+        "Dolphin": 7,
+        "Dog": 4,
+        "Donkey": 1,
+        "Horse": 1,
+        "Sheep": 1
+      }
+    },
+    {
+      "cluster_id": 8,
+      "size": 70,
+      "dominant_species": "Sheep",
+      "dominant_count": 19,
+      "dominant_ratio": 0.2714,
+      "species_distribution": {
+        "Sheep": 19,
+        "Cow": 16,
+        "Elephant": 15,
+        "Lion": 5,
+        "Cat": 4,
+        "Dog": 4,
+        "Horse": 4,
+        "Monkey": 2,
+        "Chicken": 1
+      }
+    },
+    {
+      "cluster_id": 9,
+      "size": 5,
+      "dominant_species": "Chicken",
+      "dominant_count": 5,
+      "dominant_ratio": 1.0,
+      "species_distribution": {
+        "Chicken": 5
+      }
+    },
+    {
+      "cluster_id": 10,
+      "size": 19,
+      "dominant_species": "Chicken",
+      "dominant_count": 14,
+      "dominant_ratio": 0.7368,
+      "species_distribution": {
+        "Chicken": 14,
+        "Frog": 2,
+        "Monkey": 2,
+        "Dog": 1
+      }
+    },
+    {
+      "cluster_id": 11,
+      "size": 73,
+      "dominant_species": "Horse",
+      "dominant_count": 15,
+      "dominant_ratio": 0.2055,
+      "species_distribution": {
+        "Horse": 15,
+        "Cat": 14,
+        "Monkey": 9,
+        "Dog": 8,
+        "Lion": 8,
+        "Elephant": 7,
+        "Frog": 6,
+        "Chicken": 2,
+        "Sheep": 2,
+        "Dolphin": 1,
+        "Donkey": 1
+      }
+    },
+    {
+      "cluster_id": 12,
+      "size": 87,
+      "dominant_species": "Dog",
+      "dominant_count": 24,
+      "dominant_ratio": 0.2759,
+      "species_distribution": {
+        "Dog": 24,
+        "Donkey": 17,
+        "Monkey": 12,
+        "Lion": 10,
+        "Cat": 7,
+        "Frog": 5,
+        "Chicken": 4,
+        "Sheep": 3,
+        "Bear": 2,
+        "Dolphin": 2,
+        "Cow": 1
+      }
+    }
+  ],
+  "benchmarks": {
+    "n_queries": 200,
+    "random_state": 42,
+    "k_sweep": [
+      {
+        "k": 2,
+        "fit_time_ms": 98.501,
+        "silhouette": 0.242363,
+        "davies_bouldin": 1.781477,
+        "calinski_harabasz": 180.286665,
+        "inertia": 46608.444281,
+        "ari": 0.033069,
+        "nmi": 0.103733,
+        "purity": 0.137346
+      },
+      {
+        "k": 3,
+        "fit_time_ms": 43.523,
+        "silhouette": 0.139111,
+        "davies_bouldin": 2.101826,
+        "calinski_harabasz": 134.645978,
+        "inertia": 42056.937926,
+        "ari": 0.067565,
+        "nmi": 0.165931,
+        "purity": 0.177469
+      },
+      {
+        "k": 4,
+        "fit_time_ms": 44.969,
+        "silhouette": 0.106667,
+        "davies_bouldin": 2.543581,
+        "calinski_harabasz": 104.185992,
+        "inertia": 40136.306334,
+        "ari": 0.074981,
+        "nmi": 0.176028,
+        "purity": 0.199074
+      },
+      {
+        "k": 5,
+        "fit_time_ms": 43.466,
+        "silhouette": 0.128193,
+        "davies_bouldin": 2.36629,
+        "calinski_harabasz": 88.275226,
+        "inertia": 38483.137434,
+        "ari": 0.09979,
+        "nmi": 0.226114,
+        "purity": 0.229938
+      },
+      {
+        "k": 6,
+        "fit_time_ms": 48.316,
+        "silhouette": 0.081522,
+        "davies_bouldin": 2.255513,
+        "calinski_harabasz": 78.132841,
+        "inertia": 37062.843638,
+        "ari": 0.106059,
+        "nmi": 0.238382,
+        "purity": 0.273148
+      },
+      {
+        "k": 7,
+        "fit_time_ms": 49.314,
+        "silhouette": 0.080198,
+        "davies_bouldin": 2.393781,
+        "calinski_harabasz": 70.833731,
+        "inertia": 35847.814643,
+        "ari": 0.123368,
+        "nmi": 0.257683,
+        "purity": 0.285494
+      },
+      {
+        "k": 8,
+        "fit_time_ms": 50.881,
+        "silhouette": 0.090244,
+        "davies_bouldin": 2.226842,
+        "calinski_harabasz": 66.941527,
+        "inertia": 34416.886516,
+        "ari": 0.124784,
+        "nmi": 0.262842,
+        "purity": 0.302469
+      },
+      {
+        "k": 9,
+        "fit_time_ms": 49.886,
+        "silhouette": 0.094171,
+        "davies_bouldin": 2.19336,
+        "calinski_harabasz": 61.466794,
+        "inertia": 33690.162479,
+        "ari": 0.12923,
+        "nmi": 0.267793,
+        "purity": 0.302469
+      },
+      {
+        "k": 10,
+        "fit_time_ms": 51.616,
+        "silhouette": 0.096776,
+        "davies_bouldin": 2.13507,
+        "calinski_harabasz": 59.039077,
+        "inertia": 32526.577205,
+        "ari": 0.119792,
+        "nmi": 0.265696,
+        "purity": 0.29784
+      },
+      {
+        "k": 11,
+        "fit_time_ms": 53.617,
+        "silhouette": 0.103967,
+        "davies_bouldin": 2.030073,
+        "calinski_harabasz": 57.331998,
+        "inertia": 31376.324102,
+        "ari": 0.132823,
+        "nmi": 0.282795,
+        "purity": 0.319444
+      },
+      {
+        "k": 12,
+        "fit_time_ms": 66.963,
+        "silhouette": 0.09357,
+        "davies_bouldin": 2.071315,
+        "calinski_harabasz": 54.081177,
+        "inertia": 30803.471706,
+        "ari": 0.135312,
+        "nmi": 0.294269,
+        "purity": 0.317901
+      },
+      {
+        "k": 13,
+        "fit_time_ms": 61.421,
+        "silhouette": 0.102662,
+        "davies_bouldin": 1.997796,
+        "calinski_harabasz": 52.086859,
+        "inertia": 30043.562709,
+        "ari": 0.118729,
+        "nmi": 0.287052,
+        "purity": 0.305556
+      },
+      {
+        "k": 14,
+        "fit_time_ms": 56.178,
+        "silhouette": 0.10616,
+        "davies_bouldin": 1.935595,
+        "calinski_harabasz": 50.005667,
+        "inertia": 29434.871757,
+        "ari": 0.126696,
+        "nmi": 0.289845,
+        "purity": 0.33642
+      },
+      {
+        "k": 15,
+        "fit_time_ms": 60.51,
+        "silhouette": 0.104188,
+        "davies_bouldin": 2.049901,
+        "calinski_harabasz": 47.855044,
+        "inertia": 28962.224899,
+        "ari": 0.135593,
+        "nmi": 0.307769,
+        "purity": 0.350309
+      },
+      {
+        "k": 16,
+        "fit_time_ms": 66.237,
+        "silhouette": 0.09572,
+        "davies_bouldin": 2.030072,
+        "calinski_harabasz": 46.142453,
+        "inertia": 28454.244338,
+        "ari": 0.141349,
+        "nmi": 0.313937,
+        "purity": 0.351852
+      },
+      {
+        "k": 17,
+        "fit_time_ms": 61.312,
+        "silhouette": 0.094517,
+        "davies_bouldin": 2.081911,
+        "calinski_harabasz": 44.196727,
+        "inertia": 28111.768145,
+        "ari": 0.135288,
+        "nmi": 0.314445,
+        "purity": 0.348765
+      },
+      {
+        "k": 18,
+        "fit_time_ms": 65.422,
+        "silhouette": 0.095165,
+        "davies_bouldin": 2.077528,
+        "calinski_harabasz": 42.257551,
+        "inertia": 27854.258717,
+        "ari": 0.139752,
+        "nmi": 0.318963,
+        "purity": 0.361111
+      },
+      {
+        "k": 19,
+        "fit_time_ms": 63.895,
+        "silhouette": 0.096659,
+        "davies_bouldin": 1.950844,
+        "calinski_harabasz": 40.973518,
+        "inertia": 27440.778736,
+        "ari": 0.139754,
+        "nmi": 0.324562,
+        "purity": 0.351852
+      },
+      {
+        "k": 20,
+        "fit_time_ms": 73.642,
+        "silhouette": 0.096344,
+        "davies_bouldin": 1.885193,
+        "calinski_harabasz": 40.636456,
+        "inertia": 26740.264467,
+        "ari": 0.153219,
+        "nmi": 0.335204,
+        "purity": 0.378086
+      }
+    ],
+    "knn_algorithms": [
+      {
+        "algorithm": "kd_tree",
+        "fit_time_ms": 3.7423,
+        "avg_query_ms": 0.4798,
+        "n_queries": 200,
+        "relative_to_kdtree": 1.0
+      },
+      {
+        "algorithm": "ball_tree",
+        "fit_time_ms": 2.0746,
+        "avg_query_ms": 0.3336,
+        "n_queries": 200,
+        "relative_to_kdtree": 0.7
+      },
+      {
+        "algorithm": "brute",
+        "fit_time_ms": 0.2376,
+        "avg_query_ms": 5.5207,
+        "n_queries": 200,
+        "relative_to_kdtree": 11.51
+      }
+    ],
+    "full_vs_kmeans_speed": [
+      {
+        "method": "Full-scan (không K-means)",
+        "k": null,
+        "avg_candidates": 648.0,
+        "avg_query_ms": 0.1199,
+        "recall_at_5": 0.543,
+        "overlap_with_full_at_5": 1.0,
+        "speedup_vs_full": 1.0
+      },
+      {
+        "method": "K-means K=4 + KNN trong cụm",
+        "k": 4,
+        "avg_candidates": 194.7,
+        "avg_query_ms": 0.0564,
+        "recall_at_5": 0.515,
+        "overlap_with_full_at_5": 0.809,
+        "speedup_vs_full": 2.13
+      },
+      {
+        "method": "K-means K=8 + KNN trong cụm",
+        "k": 8,
+        "avg_candidates": 99.1,
+        "avg_query_ms": 0.0324,
+        "recall_at_5": 0.522,
+        "overlap_with_full_at_5": 0.801,
+        "speedup_vs_full": 3.7
+      },
+      {
+        "method": "K-means K=10 + KNN trong cụm",
+        "k": 10,
+        "avg_candidates": 96.6,
+        "avg_query_ms": 0.084,
+        "recall_at_5": 0.512,
+        "overlap_with_full_at_5": 0.778,
+        "speedup_vs_full": 1.43
+      },
+      {
+        "method": "K-means K=13 + KNN trong cụm",
+        "k": 13,
+        "avg_candidates": 73.0,
+        "avg_query_ms": 0.0415,
+        "recall_at_5": 0.51,
+        "overlap_with_full_at_5": 0.774,
+        "speedup_vs_full": 2.89
+      },
+      {
+        "method": "K-means K=16 + KNN trong cụm",
+        "k": 16,
+        "avg_candidates": 57.8,
+        "avg_query_ms": 0.0288,
+        "recall_at_5": 0.512,
+        "overlap_with_full_at_5": 0.752,
+        "speedup_vs_full": 4.16
+      },
+      {
+        "method": "K-means K=20 + KNN trong cụm",
+        "k": 20,
+        "avg_candidates": 51.2,
+        "avg_query_ms": 0.0341,
+        "recall_at_5": 0.504,
+        "overlap_with_full_at_5": 0.753,
+        "speedup_vs_full": 3.52
+      },
+      {
+        "method": "K-means K=26 + KNN trong cụm",
+        "k": 26,
+        "avg_candidates": 37.1,
+        "avg_query_ms": 0.0278,
+        "recall_at_5": 0.501,
+        "overlap_with_full_at_5": 0.696,
+        "speedup_vs_full": 4.31
+      }
+    ],
+    "four_strategies": [
+      {
+        "strategy": "Chiến lược 1: Full-scan (không K-means)",
+        "avg_candidates": 648.0,
+        "avg_query_ms": 0.1254,
+        "recall_at_5": 0.543,
+        "speedup_vs_full": 1.0
+      },
+      {
+        "strategy": "Chiến lược 2: K-means K=13 → KNN Top-1 cụm",
+        "avg_candidates": 73.0,
+        "avg_query_ms": 0.052,
+        "recall_at_5": 0.51,
+        "speedup_vs_full": 2.41
+      },
+      {
+        "strategy": "Chiến lược 3: K-means K=13 → KNN Top-2 cụm",
+        "avg_candidates": 153.2,
+        "avg_query_ms": 0.0752,
+        "recall_at_5": 0.538,
+        "speedup_vs_full": 1.67
+      },
+      {
+        "strategy": "Chiến lược 4: PCA(92→20) + K-means K=13 + KNN",
+        "avg_candidates": 76.7,
+        "avg_query_ms": 0.0337,
+        "recall_at_5": 0.497,
+        "speedup_vs_full": 3.72
+      }
+    ]
+  }
+}
