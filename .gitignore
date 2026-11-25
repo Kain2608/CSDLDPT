@@ -33,3 +33,4 @@ Thumbs.db
 
 # Local reports (excluded from GitHub)
 Báo cáo tổng hợp/
+*.docx

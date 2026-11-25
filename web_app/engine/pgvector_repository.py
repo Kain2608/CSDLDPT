@@ -1,10 +1,9 @@
-"""Truy vấn K-Means + KNN trực tiếp trong PostgreSQL bằng extension pgvector."""
+"""Truy vấn K-Means + KNN trực tiếp trong PostgreSQL qua Stored Methods (OOP + pgvector)."""
 
 from __future__ import annotations
 
 import os
 import time
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -18,24 +17,27 @@ from web_app.engine.knn_engine import KNNSearchResult, NeighborMatch, _vote_spec
 
 load_dotenv(PROJECT_ROOT / ".env")
 
-def _to_numpy(vec) -> np.ndarray:
+
+def _to_numpy(vec: Any) -> np.ndarray:
+    """Chuyển đổi an toàn pgvector.Vector / list / ndarray về vector 1D float64."""
     if hasattr(vec, "to_numpy"):
         return vec.to_numpy().astype(np.float64).reshape(-1)
     return np.asarray(vec, dtype=np.float64).reshape(-1)
 
 
-def _to_list(vec) -> list[float]:
+def _to_list(vec: Any) -> list[float]:
     return _to_numpy(vec).tolist()
 
+
 class PgVectorRepository:
-    """Thực thi truy vấn tìm kiếm vector 92D trực tiếp trên PostgreSQL (pgvector)."""
+    """Giao tiếp với CSDL OOP PostgreSQL (animal_audio_oop_db) bằng Stored Methods + pgvector."""
 
     def __init__(self) -> None:
         self.host = os.getenv("PG_HOST", "localhost")
         self.port = int(os.getenv("PG_PORT", "5433"))
         self.dbname = os.getenv("PG_DBNAME", "animal_audio_oop_db")
         self.user = os.getenv("PG_USER", "postgres")
-        self.password = os.getenv("PG_PASSWORD", "13062005@An")
+        self.password = os.getenv("PG_PASSWORD", "")
 
     def _connect(self) -> psycopg.Connection:
         conn = psycopg.connect(
@@ -49,9 +51,11 @@ class PgVectorRepository:
         return conn
 
     def health_check(self) -> dict[str, Any]:
-        """Kiểm tra kết nối PostgreSQL và đếm số bản ghi hiện có."""
+        """Kiểm tra kết nối PostgreSQL, tính kế thừa lớp multimedia_entity -> animal_audio và số cụm."""
         with self._connect() as conn:
             with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM multimedia_entity;")
+                n_parent = int(cur.fetchone()[0])
                 cur.execute("SELECT COUNT(*) FROM animal_audio;")
                 n_files = int(cur.fetchone()[0])
                 cur.execute("SELECT COUNT(*) FROM kmeans_clusters;")
@@ -60,28 +64,24 @@ class PgVectorRepository:
             "host": self.host,
             "port": self.port,
             "dbname": self.dbname,
+            "multimedia_entity_count": n_parent,
             "n_files": n_files,
             "n_clusters": n_clusters,
         }
 
     def predict_cluster_sql(self, query_zscore: np.ndarray) -> KMeansPrediction:
-        """Tìm cụm K-Means gần nhất bằng SQL pgvector (<-> : khoảng cách Euclidean L2)."""
+        """Gọi Stored Method `predict_nearest_clusters(vector)` trong PostgreSQL."""
         q_list = _to_list(query_zscore)
 
         sql = """
-            SELECT cluster_id,
-                   centroid,
-                   cluster_size,
-                   species_distribution,
-                   (centroid <-> %s::vector) AS dist
-            FROM kmeans_clusters
-            ORDER BY centroid <-> %s::vector;
+            SELECT cluster_id, centroid, cluster_size, species_distribution, distance
+            FROM predict_nearest_clusters(%s::vector);
         """
 
         t0 = time.perf_counter()
         with self._connect() as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (q_list, q_list))
+                cur.execute(sql, (q_list,))
                 rows = cur.fetchall()
         elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -106,12 +106,12 @@ class PgVectorRepository:
 
     def _rows_to_matches(self, rows: list[tuple]) -> list[NeighborMatch]:
         matches: list[NeighborMatch] = []
-        for rank, r in enumerate(rows, start=1):
-            db_id, name, species, fpath, cid, dur, sr, fsize, dist = r
+        for r in rows:
+            rank_no, oid, name, species, fpath, cid, dur, sr, fsize, dist, _sim = r
             matches.append(
                 NeighborMatch(
-                    rank=rank,
-                    dataset_index=int(db_id) - 1,
+                    rank=int(rank_no),
+                    dataset_index=int(oid) - 1,
                     name=str(name),
                     species=str(species),
                     csv_path=str(fpath),
@@ -130,24 +130,22 @@ class PgVectorRepository:
         query_zscore: np.ndarray,
         top_k: int = 5,
         metric: str = "euclidean",
+        feature_set: str = "C",
     ) -> KNNSearchResult:
-        """Bản KHÔNG K-Means: truy vấn KNN trên toàn bộ 648 file bằng SQL pgvector."""
+        """Bản KHÔNG K-Means: gọi phương thức `search_similar_animals(..., NULL, top_k)` trên toàn bộ 648 file."""
         q_list = _to_list(query_zscore)
         op = "<=>" if metric == "cosine" else "<->"
 
-        sql = f"""
-            SELECT id, file_name, species, file_path, cluster_id,
-                   duration_sec, (tech_specs).frame_rate, (tech_specs).file_size,
-                   (features_zscore {op} %s::vector) AS distance
-            FROM animal_audio
-            ORDER BY features_zscore {op} %s::vector
-            LIMIT %s;
+        sql = """
+            SELECT rank_no, oid, file_name, species, file_path, cluster_id,
+                   duration_sec, frame_rate, size_bytes, distance, similarity_score
+            FROM search_similar_animals(%s::vector, %s, %s, NULL, %s);
         """
 
         t0 = time.perf_counter()
         with self._connect() as conn:
             with conn.cursor() as cur:
-                cur.execute(sql, (q_list, q_list, int(top_k)))
+                cur.execute(sql, (q_list, feature_set.upper(), metric.lower(), int(top_k)))
                 rows = cur.fetchall()
                 cur.execute("SELECT COUNT(*) FROM animal_audio;")
                 total_candidates = int(cur.fetchone()[0])
@@ -157,8 +155,8 @@ class PgVectorRepository:
         maj_sp, wt_sp, votes = _vote_species(matches)
 
         return KNNSearchResult(
-            mode_name="PostgreSQL pgvector — Không K-means (Full-scan)",
-            algorithm=f"pgvector SQL ({op})",
+            mode_name=f"PostgreSQL pgvector — Không K-means (Full-scan, Bộ {feature_set.upper()})",
+            algorithm=f"pgvector Stored Method ({op})",
             metric=metric,
             n_neighbors=len(matches),
             candidates_scanned=total_candidates,
@@ -179,9 +177,10 @@ class PgVectorRepository:
         top_k: int = 5,
         n_probe_clusters: int = 1,
         metric: str = "euclidean",
+        feature_set: str = "C",
         prediction: KMeansPrediction | None = None,
     ) -> tuple[KNNSearchResult, KMeansPrediction]:
-        """Bản CÓ K-Means: lọc WHERE cluster_id = ANY(%s) rồi tìm KNN bằng SQL pgvector."""
+        """Bản CÓ K-Means: gọi `search_similar_animals(..., target_clusters, top_k)` có hỗ trợ Fallback."""
         q_list = _to_list(query_zscore)
         op = "<=>" if metric == "cosine" else "<->"
 
@@ -191,14 +190,10 @@ class PgVectorRepository:
         fallback_used = False
 
         sql_count = "SELECT COUNT(*) FROM animal_audio WHERE cluster_id = ANY(%s);"
-        sql_knn = f"""
-            SELECT id, file_name, species, file_path, cluster_id,
-                   duration_sec, (tech_specs).frame_rate, (tech_specs).file_size,
-                   (features_zscore {op} %s::vector) AS distance
-            FROM animal_audio
-            WHERE cluster_id = ANY(%s)
-            ORDER BY features_zscore {op} %s::vector
-            LIMIT %s;
+        sql_knn = """
+            SELECT rank_no, oid, file_name, species, file_path, cluster_id,
+                   duration_sec, frame_rate, size_bytes, distance, similarity_score
+            FROM search_similar_animals(%s::vector, %s, %s, %s::int[], %s);
         """
 
         t0 = time.perf_counter()
@@ -207,7 +202,7 @@ class PgVectorRepository:
                 cur.execute(sql_count, (selected_clusters,))
                 candidates_scanned = int(cur.fetchone()[0])
 
-                # Fallback: nếu cụm gốc có ít hơn top_k file thì mở rộng sang cụm kế cận
+                # Fallback: nếu cụm gốc có ít hơn top_k file thì tự mở rộng sang cụm kế cận
                 next_pos = n_probe
                 while candidates_scanned < int(top_k) and next_pos < len(pred.nearest_clusters_order):
                     fallback_used = True
@@ -216,7 +211,10 @@ class PgVectorRepository:
                     cur.execute(sql_count, (selected_clusters,))
                     candidates_scanned = int(cur.fetchone()[0])
 
-                cur.execute(sql_knn, (q_list, selected_clusters, q_list, int(top_k)))
+                cur.execute(
+                    sql_knn,
+                    (q_list, feature_set.upper(), metric.lower(), selected_clusters, int(top_k)),
+                )
                 rows = cur.fetchall()
         search_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -224,8 +222,8 @@ class PgVectorRepository:
         maj_sp, wt_sp, votes = _vote_species(matches)
 
         result = KNNSearchResult(
-            mode_name=f"PostgreSQL pgvector — Có K-means (K={pred.n_clusters}, Top-{len(selected_clusters)} cụm)",
-            algorithm=f"pgvector SQL WHERE cluster_id ({op})",
+            mode_name=f"PostgreSQL pgvector — Có K-means (K={pred.n_clusters}, Top-{len(selected_clusters)} cụm, Bộ {feature_set.upper()})",
+            algorithm=f"pgvector Stored Method + cluster_id ({op})",
             metric=metric,
             n_neighbors=len(matches),
             candidates_scanned=candidates_scanned,
@@ -243,15 +241,18 @@ class PgVectorRepository:
 
 
 if __name__ == "__main__":
-    # Kiểm thử nhanh module pgvector độc lập
     repo = PgVectorRepository()
     print("Health check:", repo.health_check())
 
-    # Lấy thử vector đầu tiên trong bảng để test truy vấn
     with repo._connect() as conn:
-        q_vec = conn.execute("SELECT features_zscore FROM animal_audio LIMIT 1;").fetchone()[0]
+        q_vec = conn.execute("SELECT features_zscore FROM animal_audio WHERE file_name = 'Bear_1.wav';").fetchone()[0]
 
-    res_full = repo.search_full_scan_sql(q_vec, top_k=5)
-    res_km, pred = repo.search_with_kmeans_sql(q_vec, top_k=5)
-    print(f"Full-scan SQL ({res_full.search_time_ms:.2f} ms): {[m.name for m in res_full.matches]}")
-    print(f"K-Means SQL Cụm #{pred.cluster_id} ({res_km.search_time_ms:.2f} ms, {res_km.candidates_scanned} file): {[m.name for m in res_km.matches]}")
+    for fset in ("A", "B", "C"):
+        res_full = repo.search_full_scan_sql(q_vec, top_k=5, feature_set=fset)
+        print(f"Bộ {fset} Full-scan ({res_full.search_time_ms:.2f} ms): {[m.name for m in res_full.matches]}")
+
+    res_km, pred = repo.search_with_kmeans_sql(q_vec, top_k=5, feature_set="C")
+    print(
+        f"Bộ C K-Means Cụm #{pred.cluster_id} ({res_km.search_time_ms:.2f} ms, {res_km.candidates_scanned} file): "
+        f"{[m.name for m in res_km.matches]}"
+    )

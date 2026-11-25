@@ -70,7 +70,18 @@ with st.sidebar:
 
     top_k = st.slider("Số láng giềng trả về (Top-K)", min_value=1, max_value=15, value=KNN_DEFAULT_TOP_K)
 
-    with st.expander("Tùy chọn nâng cao (Mục 8)", expanded=False):
+    with st.expander("Tùy chọn nâng cao (Mục 3.2 & Mục 8)", expanded=False):
+        feature_set_label = st.selectbox(
+            "Bộ đặc trưng (PostgreSQL pgvector)",
+            [
+                "C — Toàn bộ 92 chiều (Mặc định)",
+                "A — 14 chiều cơ bản",
+                "B — 78 chiều MFCC + Delta + Delta²",
+            ],
+            index=0,
+            disabled=(backend != "pgvector"),
+        )
+        feature_set = feature_set_label[0]
         knn_algo = st.selectbox("Thuật toán KNN (bản Full-scan)", ["kd_tree", "ball_tree", "brute"], index=0)
         metric = st.selectbox("Độ đo khoảng cách (Metric)", ["euclidean", "cosine"], index=0)
         n_probe_clusters = st.slider(
@@ -152,6 +163,7 @@ try:
                 n_probe_clusters=n_probe_clusters,
                 include_advanced_strategies=run_4_strategies,
                 backend=backend,
+                feature_set=feature_set,
             )
         else:
             qres = pipeline.query_dataset_sample(
@@ -163,6 +175,7 @@ try:
                 n_probe_clusters=n_probe_clusters,
                 include_advanced_strategies=run_4_strategies,
                 backend=backend,
+                feature_set=feature_set,
             )
 except ValueError as err:
     st.error(f"Tệp âm thanh không hợp lệ: {err}")

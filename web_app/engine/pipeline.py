@@ -113,6 +113,7 @@ class AnimalSoundPipeline:
         n_probe_clusters: int = 1,
         include_advanced_strategies: bool = False,
         backend: str = "kdtree",
+        feature_set: str = "C",
         t_start: float | None = None,
     ) -> PipelineQueryResult:
         t0 = t_start if t_start is not None else time.perf_counter()
@@ -134,6 +135,7 @@ class AnimalSoundPipeline:
                     z_vec,
                     top_k=top_k,
                     metric=metric,
+                    feature_set=feature_set,
                 )
             if mode in ("with_kmeans", "compare"):
                 res_with_km, km_pred = self.pg_repo.search_with_kmeans_sql(
@@ -141,6 +143,7 @@ class AnimalSoundPipeline:
                     top_k=top_k,
                     n_probe_clusters=n_probe_clusters,
                     metric=metric,
+                    feature_set=feature_set,
                     prediction=km_pred,
                 )
         else:
@@ -229,6 +232,7 @@ class AnimalSoundPipeline:
         n_probe_clusters: int = 1,
         include_advanced_strategies: bool = False,
         backend: str = "kdtree",
+        feature_set: str = "C",
     ) -> PipelineQueryResult:
         """Run the full pipeline starting from uploaded file bytes."""
         t0 = time.perf_counter()
@@ -242,6 +246,7 @@ class AnimalSoundPipeline:
             n_probe_clusters=n_probe_clusters,
             include_advanced_strategies=include_advanced_strategies,
             backend=backend,
+            feature_set=feature_set,
             t_start=t0,
         )
 
@@ -255,6 +260,7 @@ class AnimalSoundPipeline:
         n_probe_clusters: int = 1,
         include_advanced_strategies: bool = False,
         backend: str = "kdtree",
+        feature_set: str = "C",
     ) -> PipelineQueryResult:
         """Run the full pipeline starting from an audio file on disk."""
         t0 = time.perf_counter()
@@ -268,6 +274,7 @@ class AnimalSoundPipeline:
             n_probe_clusters=n_probe_clusters,
             include_advanced_strategies=include_advanced_strategies,
             backend=backend,
+            feature_set=feature_set,
             t_start=t0,
         )
 
@@ -281,6 +288,7 @@ class AnimalSoundPipeline:
         n_probe_clusters: int = 1,
         include_advanced_strategies: bool = False,
         backend: str = "kdtree",
+        feature_set: str = "C",
     ) -> PipelineQueryResult:
         """Query using a sample from the 648-file dataset (uses real WAV if found, else raw 92D CSV)."""
         row = self.df_raw.iloc[int(row_index)]
@@ -295,6 +303,7 @@ class AnimalSoundPipeline:
                 n_probe_clusters=n_probe_clusters,
                 include_advanced_strategies=include_advanced_strategies,
                 backend=backend,
+                feature_set=feature_set,
             )
 
         # Fallback if original WAV files are unavailable on the host
@@ -331,5 +340,6 @@ class AnimalSoundPipeline:
             n_probe_clusters=n_probe_clusters,
             include_advanced_strategies=include_advanced_strategies,
             backend=backend,
+            feature_set=feature_set,
             t_start=t0,
         )
